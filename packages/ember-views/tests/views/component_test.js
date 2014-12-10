@@ -1,6 +1,7 @@
 import { set } from "ember-metal/property_set";
 import run from "ember-metal/run_loop";
 import EmberObject from "ember-runtime/system/object";
+import Controller from "ember-runtime/controllers/controller";
 import Service from "ember-runtime/system/service";
 import Container from "ember-runtime/system/container";
 import inject from "ember-runtime/inject";
@@ -190,6 +191,12 @@ test("Calling sendAction on a component with multiple parameters", function() {
   deepEqual(actionArguments, [firstContext, secondContext], "arguments were sent to the action");
 });
 
+test("Calling sendAction on a component with an action that is undefined", function () {
+  expectAssertion(function() {
+    component.sendAction(someUndefinedVar);
+  }, /attempted to trigger/);
+})
+
 if (Ember.FEATURES.isEnabled('ember-metal-injected-properties')) {
   QUnit.module('Ember.Component - injected properties');
 
@@ -224,7 +231,7 @@ test('something', function() {
   }).create();
 
   appComponent.send('foo', 'bar');
- 
+
   throws(function() {
     appComponent.send('baz', 'bar');
   }, /had no action handler for: baz/, 'asdf');

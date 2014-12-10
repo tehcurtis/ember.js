@@ -3,6 +3,7 @@ import Ember from "ember-metal/core"; // Ember.assert, Ember.Handlebars
 import ComponentTemplateDeprecation from "ember-views/mixins/component_template_deprecation";
 import TargetActionSupport from "ember-runtime/mixins/target_action_support";
 import View from "ember-views/views/view";
+import { Descriptor } from 'ember-metal/properties';
 
 import { get } from "ember-metal/property_get";
 import { set } from "ember-metal/property_set";
@@ -301,6 +302,14 @@ var Component = View.extend(TargetActionSupport, ComponentTemplateDeprecation, {
                    isNone(actionName) || typeof actionName === 'string');
     }
 
+    Ember.assert("The component " + this.toString() + " attempted to trigger an " +
+    "action name which was \"" + actionName + "\". If the action name is being " +
+    "set in a template where " + this.toString() + " is initialized, please ensure " +
+    "that you specified the correct action name as a string " +
+    "(e.g. `{{some-component actionName=\"someAction\"}}` " +
+    "instead of `{{something actionName=someAction}}`).",
+    this[action] instanceof Descriptor && isNone(actionName));
+
     // If no action name for that action could be found, just abort.
     if (actionName === undefined) { return; }
 
@@ -308,6 +317,7 @@ var Component = View.extend(TargetActionSupport, ComponentTemplateDeprecation, {
       action: actionName,
       actionContext: contexts
     });
+
   },
 
   send: function(actionName) {
